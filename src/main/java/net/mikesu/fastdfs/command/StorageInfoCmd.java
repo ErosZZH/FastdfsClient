@@ -29,9 +29,9 @@ public class StorageInfoCmd extends AbstractCmd<List<StorageInfo>> {
 				storageInfos.add(storageInfo);
 				offset += StorageInfo.BYTE_SIZE;
 			}
-			return new Result<>(response.getCode(), storageInfos);
+			return new Result<List<StorageInfo>>(response.getCode(), storageInfos);
 		}else{
-			return new Result<>(response.getCode(), "Error");
+			return new Result<List<StorageInfo>>(response.getCode(), "Error");
 		}
 	}
 

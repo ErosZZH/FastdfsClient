@@ -22,11 +22,11 @@ public class UploadCmd extends AbstractCmd<String> {
 			byte[] data = response.getData();
 			String group = new String(data, 0,	FDFS_GROUP_NAME_MAX_LEN).trim();
 			String remoteFileName = new String(data,FDFS_GROUP_NAME_MAX_LEN, data.length - FDFS_GROUP_NAME_MAX_LEN);
-			Result<String> result = new Result<>(response.getCode());
+			Result<String> result = new Result<String>(response.getCode());
 			result.setData(group + "/" + remoteFileName);
 			return result;
 		}else{
-			Result<String> result = new Result<>(response.getCode());
+			Result<String> result = new Result<String>(response.getCode());
 			result.setMessage("Error");
 			return result;
 		}

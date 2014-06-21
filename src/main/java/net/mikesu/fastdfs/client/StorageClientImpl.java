@@ -81,4 +81,19 @@ public class StorageClientImpl implements StorageClient{
 		return getMetaDataCmd.exec(socket);
 	}
 
+
+    /**
+     * check storage client socket is closed
+     *
+     * @return boolean
+     */
+    @Override
+    public boolean isClosed() {
+
+        if (this.socket == null ) {
+            return true;
+        }
+        return this.socket.isClosed();
+    }
+
 }

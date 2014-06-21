@@ -31,8 +31,8 @@ public class FastdfsClientImpl implements FastdfsClient{
 	public FastdfsClientImpl(List<String> trackerAddrs) throws Exception {
 		super();
 		this.trackerAddrs = trackerAddrs;
-		trackerClientPool = new GenericKeyedObjectPool<>(new TrackerClientFactory());
-		storageClientPool = new GenericKeyedObjectPool<>(new StorageClientFactory());
+		trackerClientPool = new GenericKeyedObjectPool<String, TrackerClient>(new TrackerClientFactory());
+		storageClientPool = new GenericKeyedObjectPool<String, StorageClient>(new StorageClientFactory());
 		updateStorageIpMap();
 	}
 	

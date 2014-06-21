@@ -13,5 +13,10 @@ public interface StorageClient {
 	public Result<Boolean> setMeta(String group,String fileName,Map<String,String> meta) throws IOException;
 	public Result<Map<String,String>> getMeta(String group,String fileName) throws IOException;
 	public void close() throws IOException;
-	
+
+    /**
+     * check storage client socket is closed
+     * @return boolean
+     */
+    public boolean isClosed();
 }

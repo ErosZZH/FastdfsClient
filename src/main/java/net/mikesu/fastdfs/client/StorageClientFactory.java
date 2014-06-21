@@ -36,10 +36,16 @@ public class StorageClientFactory implements KeyedPooledObjectFactory<String, St
 		storageClient.close();
 	}
 
-	@Override
-	public boolean validateObject(String key, PooledObject<StorageClient> p) {
-		return true;
-	}
+    @Override
+    public boolean validateObject(String key, PooledObject<StorageClient> p) {
+        StorageClient storageClient  = p.getObject();
+        if (storageClient.isClosed()) {
+            //return false to ignore this closed client
+            return false;
+        } else {
+            return true;
+        }
+    }
 
 	@Override
 	public void activateObject(String key, PooledObject<StorageClient> p)
