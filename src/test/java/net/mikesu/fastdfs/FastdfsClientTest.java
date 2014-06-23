@@ -36,4 +36,20 @@ public class FastdfsClientTest {
 	}
 
 
+    @Test
+    public void testUploadSlave() throws Exception {
+        FastdfsClient fastdfsClient = FastdfsClientFactory.getFastdfsClient("FastdfsClient.properties");
+        URL fileUrl = this.getClass().getResource("/Koala.jpg");
+        File file = new File(fileUrl.getPath());
+        String fileId = fastdfsClient.upload(file);
+        System.out.println("fileId:"+fileId);
+        assertNotNull(fileId);
+
+        String result = fastdfsClient.uploadSlave(file,fileId,"_200x200","jpg");
+        assertNotNull(result);
+        System.out.println(result);
+        fastdfsClient.close();
+    }
+
+
 }

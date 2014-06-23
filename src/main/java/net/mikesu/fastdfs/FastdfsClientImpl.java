@@ -7,10 +7,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
-import net.mikesu.fastdfs.client.StorageClient;
-import net.mikesu.fastdfs.client.StorageClientFactory;
-import net.mikesu.fastdfs.client.TrackerClient;
-import net.mikesu.fastdfs.client.TrackerClientFactory;
+import net.mikesu.fastdfs.client.*;
 import net.mikesu.fastdfs.data.GroupInfo;
 import net.mikesu.fastdfs.data.Result;
 import net.mikesu.fastdfs.data.StorageInfo;
@@ -20,7 +17,7 @@ import org.apache.commons.pool2.impl.GenericKeyedObjectPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FastdfsClientImpl implements FastdfsClient{
+public class FastdfsClientImpl extends AbstractClient implements FastdfsClient{
 	
 	private static Logger logger = LoggerFactory.getLogger(FastdfsClientImpl.class);
 	private GenericKeyedObjectPool<String, TrackerClient> trackerClientPool;
@@ -53,7 +50,47 @@ public class FastdfsClientImpl implements FastdfsClient{
 		this.storageClientPool.close();
 	}
 
-	private void updateStorageIpMap() throws Exception{
+    @Override
+    public String uploadSlave(File file, String fileid, String prefix, String ext) throws Exception {
+
+        String trackerAddr = getTrackerAddr();
+        TrackerClient trackerClient = null;
+        StorageClient storageClient = null;
+        String storageAddr = null;
+        String fileId = null;
+        try {
+            trackerClient = trackerClientPool.borrowObject(trackerAddr);
+
+            if(fileid!=null){
+                String[] tupple = splitFileId(fileid);
+                String groupname = tupple[0];
+                String filename = tupple[1];
+
+                Result<String> result = trackerClient.getUpdateStorageAddr(groupname,filename);
+                if(result.getCode() == 0) {
+                    storageAddr = result.getData();
+                    storageClient = storageClientPool.borrowObject(storageAddr);
+                    Result<String> result2 = storageClient.uploadSlave(file, filename, prefix,ext,null);
+                    if(result2.getCode()==0){
+                        fileId = result2.getData();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw e;
+        } finally {
+            if(storageClient!=null){
+                storageClientPool.returnObject(storageAddr, storageClient);
+            }
+            if(trackerClient!=null){
+                trackerClientPool.returnObject(trackerAddr, trackerClient);
+            }
+        }
+        return fileId;
+    }
+
+    private void updateStorageIpMap() throws Exception{
 		String trackerAddr = getTrackerAddr();
 		TrackerClient trackerClient = null;
 		try {

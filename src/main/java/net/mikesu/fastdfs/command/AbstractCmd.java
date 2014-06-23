@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Map;
 
 public abstract class AbstractCmd<T> implements Command<T> {
 	
@@ -104,6 +105,18 @@ public abstract class AbstractCmd<T> implements Command<T> {
 		os.close();
 		return SUCCESS_CODE;
 	}
+
+    protected String metaDataToStr(Map<String,String> metaData){
+        StringBuffer sb = new StringBuffer();
+        for(String key:metaData.keySet()){
+            sb.append(FDFS_RECORD_SEPERATOR);
+            sb.append(key);
+            sb.append(FDFS_FIELD_SEPERATOR);
+            sb.append(metaData.get(key));
+        }
+
+        return sb.toString().substring(FDFS_RECORD_SEPERATOR.length());
+    }
 	
 	public static byte[] long2buff(long n) {
 		byte[] bs;
@@ -138,6 +151,23 @@ public abstract class AbstractCmd<T> implements Command<T> {
 				| ((long) (bs[offset + 7] >= 0 ? bs[offset + 7]
 						: 256 + bs[offset + 7]));
 	}
+
+    /**
+     * 传入带group的fileid,返回group和filename的二元数组
+     * @param file_id fileid like g1/M00/00/00/abc.jpg
+     * @return string[2] string[0] = g1, string[1]=M00/00/00/abc.jpg
+     */
+    public static String[] splitFileId(String file_id) {
+        int pos = file_id.indexOf("/");
+        if ((pos <= 0) || (pos == file_id.length() - 1)) {
+            return null;
+        }
+
+        String[] results = new String[2];
+        results[0] = file_id.substring(0, pos); //group name
+        results[1] = file_id.substring(pos + 1); //file name
+        return results;
+    }
 	
 	protected class Response {
 		

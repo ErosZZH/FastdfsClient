@@ -53,17 +53,7 @@ public class SetMetaDataCmd extends AbstractCmd<Boolean> {
 		this.responseSize = 0;
 	}
 	
-	private String metaDataToStr(Map<String,String> metaData){
-		StringBuffer sb = new StringBuffer();
-		for(String key:metaData.keySet()){
-			sb.append(FDFS_RECORD_SEPERATOR);
-			sb.append(key);
-			sb.append(FDFS_FIELD_SEPERATOR);
-			sb.append(metaData.get(key));
-		}
-		
-		return sb.toString().substring(FDFS_RECORD_SEPERATOR.length());
-	}
+
 	
 
 }
