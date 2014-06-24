@@ -32,7 +32,13 @@ public class UploadCmd extends AbstractCmd<String> {
 		}
 	}
 
-	public UploadCmd(File file,String fileName,byte storePathIndex){
+    /**
+     *
+     * @param file
+     * @param extName 文件扩展名，如果传入一个完整文件名，将截取扩展名
+     * @param storePathIndex
+     */
+	public UploadCmd(File file,String extName,byte storePathIndex){
 		super();
 		this.file = file;
 		this.requestCmd = STORAGE_PROTO_CMD_UPLOAD_FILE;
@@ -43,7 +49,7 @@ public class UploadCmd extends AbstractCmd<String> {
 		Arrays.fill(body1, (byte) 0);
 		this.body1[0] = storePathIndex;
 		byte[] fileSizeByte = long2buff(file.length());
-		byte[] fileExtNameByte = getFileExtNameByte(fileName);
+		byte[] fileExtNameByte = getFileExtNameByte(extName);
 		int fileExtNameByteLen = fileExtNameByte.length;
 		if(fileExtNameByteLen>FDFS_FILE_EXT_NAME_MAX_LEN){
 			fileExtNameByteLen = FDFS_FILE_EXT_NAME_MAX_LEN;
@@ -57,11 +63,15 @@ public class UploadCmd extends AbstractCmd<String> {
 		int nPos = fileName.lastIndexOf('.');
 		if (nPos > 0 && fileName.length() - nPos <= FDFS_FILE_EXT_NAME_MAX_LEN + 1) {
 			fileExtName = fileName.substring(nPos + 1);
-		}
-		if (fileExtName != null && fileExtName.length() > 0) {
-			return fileExtName.getBytes(charset);
-		}else{
-			return new byte[0];
-		}
+            if (fileExtName != null && fileExtName.length() > 0) {
+                return fileExtName.getBytes(charset);
+            }else{
+                return new byte[0];
+            }
+		} else {
+            //传入的即为扩展名
+            return fileName.getBytes(charset);
+        }
+
 	}
 }

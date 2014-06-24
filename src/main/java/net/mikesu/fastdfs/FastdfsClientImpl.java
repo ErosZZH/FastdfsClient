@@ -51,6 +51,47 @@ public class FastdfsClientImpl extends AbstractClient implements FastdfsClient{
 	}
 
     @Override
+    public String upload(File file, String ext, Map<String, String> meta) throws Exception {
+        String trackerAddr = getTrackerAddr();
+        TrackerClient trackerClient = null;
+        StorageClient storageClient = null;
+        String storageAddr = null;
+        String fileId = null;
+        try {
+            trackerClient = trackerClientPool.borrowObject(trackerAddr);
+            Result<UploadStorage> result = trackerClient.getUploadStorage();
+            if(result.getCode()==0){
+                storageAddr = result.getData().getAddress();
+                storageClient = storageClientPool.borrowObject(storageAddr);
+
+                String extname =  ext;
+                if (ext == null) {
+                    extname = getFileExtName(file);
+                }
+                Result<String> result2 = storageClient.upload(file, extname, result.getData().getPathIndex());
+                if(result2.getCode()==0){
+                    fileId = result2.getData();
+                    //if meta key value
+                    if (meta !=null ) {
+                        this.setMeta(fileId,meta);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw e;
+        } finally {
+            if(storageClient!=null){
+                storageClientPool.returnObject(storageAddr, storageClient);
+            }
+            if(trackerClient!=null){
+                trackerClientPool.returnObject(trackerAddr, trackerClient);
+            }
+        }
+        return fileId;
+    }
+
+    @Override
     public String uploadSlave(File file, String fileid, String prefix, String ext) throws Exception {
 
         String trackerAddr = getTrackerAddr();
@@ -70,7 +111,7 @@ public class FastdfsClientImpl extends AbstractClient implements FastdfsClient{
                 if(result.getCode() == 0) {
                     storageAddr = result.getData();
                     storageClient = storageClientPool.borrowObject(storageAddr);
-                    Result<String> result2 = storageClient.uploadSlave(file, filename, prefix,ext,null);
+                    Result<String> result2 = storageClient.uploadSlave(file, filename, prefix, ext, null);
                     if(result2.getCode()==0){
                         fileId = result2.getData();
                     }
@@ -229,34 +270,7 @@ public class FastdfsClientImpl extends AbstractClient implements FastdfsClient{
 	}
 
 	public String upload(File file,String fileName) throws Exception{
-		String trackerAddr = getTrackerAddr();
-		TrackerClient trackerClient = null;
-		StorageClient storageClient = null;
-		String storageAddr = null;
-		String fileId = null;
-		try {
-			trackerClient = trackerClientPool.borrowObject(trackerAddr);
-			Result<UploadStorage> result = trackerClient.getUploadStorage();
-			if(result.getCode()==0){
-				storageAddr = result.getData().getAddress();
-				storageClient = storageClientPool.borrowObject(storageAddr);
-				Result<String> result2 = storageClient.upload(file, fileName, result.getData().getPathIndex());
-				if(result2.getCode()==0){
-					fileId = result2.getData();
-				}
-			}
-		} catch (Exception e) {
-			logger.error(e.getMessage());
-			throw e;
-		} finally {
-			if(storageClient!=null){
-				storageClientPool.returnObject(storageAddr, storageClient);
-			}
-			if(trackerClient!=null){
-				trackerClientPool.returnObject(trackerAddr, trackerClient);
-			}
-		}
-		return fileId;
+		return this.upload(file,fileName,null);
 	}
 	
 	public Boolean delete(String fileId) throws Exception{
@@ -296,6 +310,20 @@ public class FastdfsClientImpl extends AbstractClient implements FastdfsClient{
         int i = r.nextInt(trackerAddrs.size());
 		return trackerAddrs.get(i);
 	}
+
+    private String getFileExtName(File file) {
+        String name = file.getName();
+        if (name!=null ) {
+            int i = name.lastIndexOf('.');
+            if (i>-1) {
+                return name.substring(i+1);
+            }else {
+                return null;
+            }
+        }else {
+            return null;
+        }
+    }
 	
 	private class FastDfsFile{
 		private String group;

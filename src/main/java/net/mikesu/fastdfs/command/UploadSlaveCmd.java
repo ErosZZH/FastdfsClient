@@ -36,9 +36,8 @@ public class UploadSlaveCmd extends AbstractCmd<String> {
      * @param masterfilename 主文件名
      * @param prefix 前缀
      * @param ext 后缀
-     * @param metadata 元数据,可以为空
      */
-    public UploadSlaveCmd(File file, String masterfilename, String prefix, String ext, Map<String,String> metadata){
+    public UploadSlaveCmd(File file, String masterfilename, String prefix, String ext){
         super();
         this.file = file;
         this.requestCmd = STORAGE_PROTO_CMD_UPLOAD_SLAVE_FILE;

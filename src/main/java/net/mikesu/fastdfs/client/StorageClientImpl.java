@@ -10,7 +10,7 @@ import net.mikesu.fastdfs.FastdfsClientConfig;
 import net.mikesu.fastdfs.command.*;
 import net.mikesu.fastdfs.data.Result;
 
-public class StorageClientImpl implements StorageClient {
+public class StorageClientImpl extends AbstractClient implements StorageClient {
 
     private Socket socket;
     private String host;
@@ -51,8 +51,18 @@ public class StorageClientImpl implements StorageClient {
     @Override
     public Result<String> uploadSlave(File file, String fileid, String slavePrefix, String ext, Map<String, String> meta) throws IOException {
         Socket socket = getSocket();
-        UploadSlaveCmd uploadSlaveCmd = new UploadSlaveCmd(file,fileid,slavePrefix,ext,null);
-        return uploadSlaveCmd.exec(socket);
+        UploadSlaveCmd uploadSlaveCmd = new UploadSlaveCmd(file,fileid,slavePrefix,ext);
+        Result<String> result = uploadSlaveCmd.exec(socket);
+
+        if (meta != null) {
+            String[] tupple = super.splitFileId(fileid);
+            if (tupple != null) {
+                String group = tupple[0];
+                String fileName = tupple[1];
+                this.setMeta(group, fileName, meta);
+            }
+        }
+        return result;
     }
 
     public Result<String> upload(File file, String fileName, byte storePathIndex) throws IOException {

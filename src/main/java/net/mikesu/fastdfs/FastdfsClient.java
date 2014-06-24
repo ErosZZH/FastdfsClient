@@ -13,6 +13,17 @@ public interface FastdfsClient {
 	public Boolean delete(String fileId) throws Exception;
 	public void close();
 
+
+    /**
+     * 上传一个文件
+     * @param file 要上传的文件
+     * @param ext 文件扩展名
+     * @param meta meta key/value的meta data，可为null
+     * @return fileid 带group的fileid
+     * @throws Exception
+     */
+    public String upload(File file,String ext,Map<String,String> meta) throws Exception;
+
     /**
      * upload slave
      * @param file
