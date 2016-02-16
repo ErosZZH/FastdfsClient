@@ -72,6 +72,7 @@ public class FastdfsClientTest {
         assertNotNull(a);
         assertEquals(a.get("size"),"300x300");
         assertEquals(a.get("nickname"),"nickname");
+        System.out.println(a.get("nickname"));
         fastdfsClient.close();
     }
 

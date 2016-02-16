@@ -68,7 +68,9 @@ public class StorageInfo {
 	protected Date lastSyncedTimestamp;
 	protected Date lastHeartBeatTime;
 	protected boolean ifTrunkServer;
-	public final static int BYTE_SIZE = 600;
+	
+	//It's 612 in fastdfs5.05
+	public final static int BYTE_SIZE = 612;
 	
 
 	public StorageInfo(byte[] data,int offset) {
