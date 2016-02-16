@@ -22,7 +22,6 @@ public class QueryDownloadCmd extends AbstractCmd<String> {
 			return result;
 		}else{
 			Result<String> result = new Result<String>(response.getCode());
-			//TODO:根据不同的code给不同的Error Message
 			result.setMessage("");
 			return result;
 		}
