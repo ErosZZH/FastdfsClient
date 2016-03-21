@@ -14,7 +14,7 @@ import org.junit.Test;
 
 public class TrackerClientTest {
 
-	private final static String FDFS_IP = "192.168.6.46";
+	private final static String FDFS_IP = "192.168.6.68";
 	
 	@Test
 	public void testGetUploadStorageAddr() throws NumberFormatException, UnknownHostException, IOException {

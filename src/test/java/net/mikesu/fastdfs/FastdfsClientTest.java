@@ -3,6 +3,7 @@ package net.mikesu.fastdfs;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,8 +15,8 @@ public class FastdfsClientTest {
 
 	@Test
 	public void testFastdfsClient() throws Exception {
-		FastdfsClient fastdfsClient = FastdfsClientFactory.getFastdfsClient();
-		URL fileUrl = this.getClass().getResource("/Koala.jpg");
+		FastdfsClient fastdfsClient = new FastdfsClientFactory("FastdfsClient.properties").getFastdfsClient();
+		URL fileUrl = this.getClass().getResource("/1.JPG");
 		File file = new File(fileUrl.getPath());
 		String fileId = fastdfsClient.upload(file);
 		System.out.println("fileId:"+fileId);
@@ -35,11 +36,19 @@ public class FastdfsClientTest {
 		fastdfsClient.close();
 	}
 
+    @Test
+    public void testFile() throws Exception {
+        URL fileUrl = this.getClass().getResource("/1.JPG");
+        File file = new File(fileUrl.getPath());
+        System.out.println("File length: " + file.length());
+        System.out.println("Stream length: " + new FileInputStream(file).getChannel().size());
+    }
+
 
     @Test
     public void testUploadSlave() throws Exception {
-        FastdfsClient fastdfsClient = FastdfsClientFactory.getFastdfsClient();
-        URL fileUrl = this.getClass().getResource("/Koala.jpg");
+        FastdfsClient fastdfsClient = new FastdfsClientFactory("FastdfsClient.properties").getFastdfsClient();
+        URL fileUrl = this.getClass().getResource("/1.JPG");
         File file = new File(fileUrl.getPath());
         String fileId = fastdfsClient.upload(file);
         System.out.println("fileId:"+fileId);
@@ -53,8 +62,8 @@ public class FastdfsClientTest {
 
     @Test
     public void testUploadMeta() throws Exception {
-        FastdfsClient fastdfsClient = FastdfsClientFactory.getFastdfsClient();
-        URL fileUrl = this.getClass().getResource("/Koala.jpg");
+        FastdfsClient fastdfsClient = new FastdfsClientFactory("FastdfsClient.properties").getFastdfsClient();
+        URL fileUrl = this.getClass().getResource("/1.JPG");
         File file = new File(fileUrl.getPath());
         Map<String,String> meta = new HashMap<String, String>();
         meta.put("size","200x200");

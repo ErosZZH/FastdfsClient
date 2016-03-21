@@ -20,12 +20,14 @@ public class FastdfsClientFactory {
 	private static volatile FastdfsClient fastdfsClient;
     private static FastdfsClientConfig config = null;
 
-    private final static String configFile = "FastdfsClient.properties";
+    private String configFile = "FastdfsClient.properties";
 
-    public FastdfsClientFactory() {
+
+    public FastdfsClientFactory(String configFile) {
+        this.configFile = configFile;
     }
 
-    public static FastdfsClient getFastdfsClient(){
+    public FastdfsClient getFastdfsClient(){
         if (fastdfsClient == null) {
             synchronized (FastdfsClient.class) {
                 if (fastdfsClient == null) {
